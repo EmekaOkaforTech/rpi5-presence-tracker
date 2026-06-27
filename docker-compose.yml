@@ -1,0 +1,21 @@
+services:
+
+  codeproject-ai:
+    image: codeproject/ai-server:arm64
+    container_name: codeproject-ai
+    restart: unless-stopped
+    ports:
+      - "32168:32168"
+    volumes:
+      - ./data/codeproject-ai:/etc/codeproject/ai
+
+  double-take:
+    image: skrashevich/double-take:latest
+    container_name: double-take
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./data/double-take:/.storage
+    depends_on:
+      - codeproject-ai

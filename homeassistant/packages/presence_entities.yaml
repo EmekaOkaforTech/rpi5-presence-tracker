@@ -1,0 +1,28 @@
+# Presence tracking entities
+# Add to Home Assistant via Settings -> Helpers (for input_number and input_text)
+# OR add to your configuration.yaml packages directory
+
+input_number:
+  lounge_person_x:
+    name: Lounge Person Position X
+    min: 0
+    max: 100
+    step: 0.1
+    mode: box
+
+  lounge_person_y:
+    name: Lounge Person Position Y
+    min: 0
+    max: 100
+    step: 0.1
+    mode: box
+
+input_boolean:
+  lounge_person_active:
+    name: Lounge Person Active
+
+input_text:
+  lounge_person_name:
+    name: Lounge Person Name
+    initial: "Unknown"
+    max: 64

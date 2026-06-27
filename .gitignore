@@ -1,0 +1,5 @@
+.env
+data/double-take/faces/
+data/double-take/matches/
+data/double-take/train/
+data/codeproject-ai/

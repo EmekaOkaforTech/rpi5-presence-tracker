@@ -1,0 +1,28 @@
+# Double Take configuration
+# Place this file at: ./data/double-take/config/config.yml
+# Edit the values below to match your setup before running docker compose up
+
+mqtt:
+  host: YOUR_MQTT_HOST         # e.g. 192.168.30.40
+  username: YOUR_MQTT_USER
+  password: YOUR_MQTT_PASSWORD
+
+frigate:
+  url: http://YOUR_FRIGATE_IP:5000   # internal HTTP port, not HTTPS
+  cameras:
+    - living_room              # must match your Frigate camera name exactly
+
+detectors:
+  aiserver:
+    url: http://codeproject-ai:32168
+    timeout: 15
+    opencv_face_required: false
+
+detect:
+  match:
+    save: true
+    confidence: 60
+    min_area: 10000
+  unknown:
+    save: true
+    confidence: 40

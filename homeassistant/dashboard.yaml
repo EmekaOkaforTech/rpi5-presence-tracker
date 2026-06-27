@@ -1,0 +1,47 @@
+# Floor Plan Dashboard Card
+# Requires: custom:button-card (install via HACS)
+# Paste this into your HA dashboard -> Edit -> Add Card -> Manual
+
+type: picture-elements
+image: /local/floorplan_lounge.png
+elements:
+  - type: custom:button-card
+    entity: input_boolean.lounge_person_active
+    show_icon: true
+    show_name: true
+    icon: mdi:account
+    name: |
+      [[[
+        return states['input_text.lounge_person_name'].state || 'Unknown';
+      ]]]
+    styles:
+      card:
+        - position: absolute
+        - top: |
+            [[[
+              return states['input_number.lounge_person_y'].state + '%';
+            ]]]
+        - left: |
+            [[[
+              return states['input_number.lounge_person_x'].state + '%';
+            ]]]
+        - background: none
+        - box-shadow: none
+        - border: none
+        - width: 60px
+        - transform: translate(-50%, -50%)
+      icon:
+        - color: red
+        - filter: drop-shadow(0 0 8px red)
+        - width: 32px
+      name:
+        - color: white
+        - font-size: 11px
+        - font-weight: bold
+        - text-shadow: 0 0 4px black
+        - margin-top: 2px
+    state:
+      - value: "off"
+        styles:
+          card:
+            - display: none

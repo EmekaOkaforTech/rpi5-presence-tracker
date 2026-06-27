@@ -1,0 +1,75 @@
+# Presence tracking automations
+# Paste into Home Assistant -> Settings -> Automations (use Edit as YAML mode)
+# OR place in your HA packages directory
+
+automation:
+
+  - id: update_lounge_person_position
+    alias: "Presence — Update Lounge Person Position"
+    description: "Reads Frigate bounding box from MQTT and maps to floor plan coordinates"
+    trigger:
+      - platform: mqtt
+        topic: "frigate/events"
+    condition:
+      - condition: template
+        value_template: >-
+          {{ trigger.payload_json.type in ['new', 'update']
+             and trigger.payload_json.after.camera == 'living_room'
+             and trigger.payload_json.after.label == 'person' }}
+    action:
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.lounge_person_x
+        data:
+          value: >-
+            {% set box = trigger.payload_json.after.box %}
+            {% set cx = (box[0] + box[2]) / 2 %}
+            {{ (cx / 640 * 100) | round(1) }}
+
+      - service: input_number.set_value
+        target:
+          entity_id: input_number.lounge_person_y
+        data:
+          value: >-
+            {% set box = trigger.payload_json.after.box %}
+            {% set cy = (box[1] + box[3]) / 2 %}
+            {{ (cy / 480 * 100) | round(1) }}
+
+      - service: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.lounge_person_active
+
+  - id: clear_lounge_person_on_exit
+    alias: "Presence — Clear Lounge Person on Exit"
+    description: "Clears position and name when Frigate reports the tracked person has left"
+    trigger:
+      - platform: mqtt
+        topic: "frigate/events"
+    condition:
+      - condition: template
+        value_template: >-
+          {{ trigger.payload_json.type == 'end'
+             and trigger.payload_json.after.camera == 'living_room'
+             and trigger.payload_json.after.label == 'person' }}
+    action:
+      - service: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.lounge_person_active
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.lounge_person_name
+        data:
+          value: "Unknown"
+
+  - id: update_lounge_person_identity
+    alias: "Presence — Update Lounge Person Identity from Double Take"
+    description: "Reads identity match from Double Take MQTT and updates displayed name"
+    trigger:
+      - platform: mqtt
+        topic: "double-take/matches/+"
+    action:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.lounge_person_name
+        data:
+          value: "{{ trigger.topic.split('/')[-1] | title }}"
